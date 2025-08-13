@@ -20,7 +20,6 @@ public class CommentController {
         return commentService.saveComment(postId, token, comment.getEmail(), comment.getComment());
     }
 
-
     @GetMapping("/comment/{commentId}")
     public Comment getCommentById(@PathVariable Long commentId){
         return commentService.getCommentById(commentId);

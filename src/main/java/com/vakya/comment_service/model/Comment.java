@@ -31,4 +31,11 @@ public class Comment{
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+//    public Comment(Long postId, String username, String email, String text) {
+//        this.id = postId;
+//        this.name=username;
+//        this.email=email;
+//        this.comment=text;
+//    }
 }

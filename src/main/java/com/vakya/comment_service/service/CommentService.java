@@ -21,7 +21,7 @@ public class CommentService {
         this.userClient = userClient;
     }
 
-    public Comment saveComment(Long postId, String token, String email, String text) {
+   /* public Comment saveComment(Long postId, String token, String email, String text) {
         String username = validateToken(token);
 
         try {
@@ -37,7 +37,30 @@ public class CommentService {
         comment.setComment(text);
 
         return commentRepository.save(comment);
+    }*/
+
+    public Comment saveComment(Long postId, String token, String email, String text) {
+        String username = validateToken(token);
+
+        try {
+            commentInterface.checkPostExists(postId);
+        } catch (FeignException.NotFound e) {
+            throw new RuntimeException("Post with ID " + postId + " does not exist");
+        }
+
+        //Comment comment = new Comment(postId, username, email, text);
+        Comment comment = new Comment();
+        comment.setPostId(postId);
+        comment.setName(username);
+        comment.setEmail(email);
+        comment.setComment(text);
+        Comment savedComment = commentRepository.save(comment);
+
+        commentInterface.addCommentToPost(postId, savedComment.getId());
+
+        return savedComment;
     }
+
 
 
     public Comment updateComment(Long commentId, String name, String email, String text, Long postId, String token) {
