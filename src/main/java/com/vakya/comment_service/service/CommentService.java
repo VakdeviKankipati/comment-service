@@ -93,9 +93,12 @@ public class CommentService {
     private String validateToken(String token) {
         try {
             String header = token != null && token.startsWith("Bearer ") ? token : ("Bearer " + token);
-            return userClient.validateToken(header);
+            String username = userClient.validateToken(header);
+            return username;
         } catch (FeignException.Unauthorized e) {
             throw new RuntimeException("Invalid or expired token");
+        } catch (Exception e) {
+            throw new RuntimeException("Token validation failed: " + e.getMessage());
         }
     }
 
