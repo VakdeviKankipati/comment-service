@@ -25,26 +25,55 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  # Step 1: Install Terraform
-  - task: TerraformInstaller@1
-    inputs:
-      terraformVersion: '1.6.0'
-
-  # Step 2: Start LocalStack in Docker
+  # Install Terraform CLI (replaces TerraformInstaller task)
   - script: |
-      docker run -d -p 4566:4566 localstack/localstack
-      sleep 10   # wait for LocalStack to fully start
-    displayName: 'Start LocalStack'
+      set -e
+      sudo apt-get update -y
+      sudo apt-get install -y unzip wget curl
+      TF_VER="1.6.0"
+      echo "Downloading terraform ${TF_VER}..."
+      wget -q "https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip" -O /tmp/terraform.zip
+      unzip -o /tmp/terraform.zip -d /tmp
+      sudo mv /tmp/terraform /usr/local/bin/terraform
+      sudo chmod +x /usr/local/bin/terraform
+      terraform version
+    displayName: 'Install Terraform CLI'
 
-  # Step 3: Terraform Init
-  - script: terraform init
-    displayName: 'Terraform Init'
+  # Start LocalStack in background (so terraform can talk to localhost:4566)
+  - script: |
+      docker run -d --name localstack -p 4566:4566 localstack/localstack
+      echo "Waiting for LocalStack to become healthy..."
+      for i in $(seq 1 30); do
+        if curl -s http://localhost:4566/health | grep -q '"services"'; then
+          echo "LocalStack is ready"
+          break
+        fi
+        echo "Waiting... ($i)"
+        sleep 2
+      done
+    displayName: 'Start LocalStack (Docker)'
 
-  # Step 4: Terraform Plan
-  - script: terraform plan -out=tfplan
-    displayName: 'Terraform Plan'
+  # Terraform init & plan
+  - script: |
+      terraform init -input=false
+      terraform plan -out=tfplan -input=false
+    displayName: 'Terraform Init & Plan'
 
-  # Step 5: Terraform Apply
+  # Terraform apply
   - script: terraform apply -auto-approve tfplan
     displayName: 'Terraform Apply'
+
+  # (Optional) Verify S3 via awscli pointed to LocalStack
+  - script: |
+      sudo apt-get install -y awscli
+      aws --endpoint-url=http://localhost:4566 s3 ls
+    displayName: 'Verify S3 (LocalStack)'
+
+  # Destroy and cleanup (recommended for ephemeral runs)
+  - script: |
+      terraform destroy -auto-approve || true
+      docker stop localstack || true
+      docker rm localstack || true
+    displayName: 'Terraform Destroy & Cleanup'
+
 
