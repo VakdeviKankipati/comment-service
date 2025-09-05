@@ -58,12 +58,19 @@ steps:
       terraform init -input=false
       terraform plan -out=tfplan -input=false
     displayName: 'Terraform Init & Plan'
+    workingDirectory: $(System.DefaultWorkingDirectory)/terraform
+
+
 
   # Terraform apply
   - script: terraform apply -auto-approve tfplan
     displayName: 'Terraform Apply'
+    workingDirectory: $(System.DefaultWorkingDirectory)/terraform
+
 
   # (Optional) Verify S3 via awscli pointed to LocalStack
+
+
   - script: |
       sudo apt-get install -y awscli
       aws --endpoint-url=http://localhost:4566 s3 ls
