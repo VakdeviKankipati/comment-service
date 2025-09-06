@@ -9,27 +9,26 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-stages:
-- stage: Build
-  jobs:
-  - job: BuildApp
-    steps:
-    - script: mvn clean package
-      displayName: "Build the Spring Boot App"
+jobs:
+- job: Job1
+  displayName: "First Job"
+  steps:
+  - script: echo "This is Job 1 - Step 1"
+    displayName: "Run Job1 Step1"
 
-- stage: Deploy
-  dependsOn: Build
-  jobs:
-  - job: DeployInfra
-    steps:
-    - script: terraform apply -auto-approve
-      displayName: "Deploy Infra with Terraform"
+  - script: echo "Job 1 completed!"
+    displayName: "Run Job1 Step2"
 
-  - job: DeployApp
-    dependsOn: DeployInfra
-    steps:
-    - script: echo "Deploying Spring Boot App..."
-      displayName: "Deploy App"
+- job: Job2
+  displayName: "Second Job"
+  dependsOn: Job1   # 👈 makes Job2 wait until Job1 finishes
+  steps:
+  - script: echo "This is Job 2 - Step 1"
+    displayName: "Run Job2 Step1"
+
+  - script: echo "Job 2 completed!"
+    displayName: "Run Job2 Step2"
+
 
 
 
