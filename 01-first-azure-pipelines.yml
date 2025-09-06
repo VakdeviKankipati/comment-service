@@ -9,14 +9,24 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- script: echo Hello, world,change!
-  displayName: 'Run a one-line script'
+jobs:
+- job: Job1
+  displayName: "First Job"
+  steps:
+  - script: echo "This is Job 1 - Step 1"
+    displayName: "Run Job1 Step1"
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - script: echo "Job 1 completed!"
+    displayName: "Run Job1 Step2"
+
+- job: Job2
+  displayName: "Second Job"# 👈 makes Job2 wait until Job1 finishes
+  steps:
+  - script: echo "This is Job 2 - Step 1"
+    displayName: "Run Job2 Step1"
+
+  - script: echo "Job 2 completed!"
+    displayName: "Run Job2 Step2"
 
 
 
