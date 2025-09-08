@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: commentservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: commentservice
+  template:
+    metadata:
+      labels:
+        app: commentservice
+    spec:
+      containers:
+      - name: commentservice
+        image: vakdevi/comment-service-devops:latest
+        ports:
+        - containerPort: 8080
