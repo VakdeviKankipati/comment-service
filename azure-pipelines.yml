@@ -28,16 +28,16 @@ steps:
 # Step 3: Terraform Init
 - script: terraform init
   displayName: 'Terraform Init'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
 
 # Step 4: Terraform Plan
 - script: terraform plan -out=tfplan
   displayName: 'Terraform Plan'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
 
 # Step 5: Terraform Apply
 - script: terraform apply -auto-approve tfplan
   displayName: 'Terraform Apply'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
 
 
