@@ -1,7 +1,6 @@
 # Starter pipeline
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
 
 trigger:
 - main
@@ -27,7 +26,7 @@ steps:
 # Step 2: Build Docker Image
 # -------------------------
 - script: |
-    docker build -t $(imageName):$(imageTag) .
+    docker build -t $(imageName):$(imageTag) commentservice/
   displayName: 'Build Docker Image'
 
 # -------------------------
@@ -66,15 +65,15 @@ steps:
 # Step 6: Update Kubernetes deployment
 # -------------------------
 - script: |
-    sed -i "s|image:.*|image: $(imageName):$(imageTag)|g" k8s/deployment.yaml
+    sed -i "s|image:.*|image: $(imageName):$(imageTag)|g" commentservice/k8s/deployment.yaml
   displayName: 'Update K8S deployment image'
 
 # -------------------------
 # Step 7: Deploy to Minikube
 # -------------------------
 - script: |
-    kubectl apply -f k8s/deployment.yaml
-    kubectl apply -f k8s/service.yaml
+    kubectl apply -f commentservice/k8s/deployment.yaml
+    kubectl apply -f commentservice/k8s/service.yaml
     kubectl get pods -A
   displayName: 'Deploy App to Minikube'
 
