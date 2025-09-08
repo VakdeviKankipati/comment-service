@@ -72,14 +72,14 @@ stages:
     # Step 4: Update K8S manifests
     # -------------------------
     - script: |
-        sed -i "s|image:.*|image: $(imageName):$(tag)|g" commentservice/k8s/deployment.yaml
+        sed -i "s|image:.*|image: $(imageName):$(tag)|g" deployment.yaml
       displayName: Update K8S deployment image
 
     # -------------------------
     # Step 5: Deploy to Minikube
     # -------------------------
     - script: |
-        kubectl apply -f commentservice/k8s/deployment.yaml
-        kubectl apply -f commentservice/k8s/service.yaml
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
         kubectl get pods -A
       displayName: Deploy App to Minikube
